@@ -1,0 +1,9 @@
+<ion-view title="Devices">
+  <ion-content class="has-header">
+    <ion-list>
+      <ion-item ng-repeat="device in devices" type="item-text-wrap" href="#/device/{{device.id}}">
+        {{device.name}}
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
