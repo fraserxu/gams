@@ -14,7 +14,6 @@ angular.module('gams.services', [])
     })
     .success(function(data, status, headers, config) {
       console.log('login success')
-
       // TODO: save token
     })
     .error(function(data, status, headers, config) {
@@ -26,54 +25,131 @@ angular.module('gams.services', [])
   }
 }])
 
-.factory('Devices', function() {
-  var fakeDevices = [
-    {
-      "id":"50f5f190-05bb-4dfe-8714-9dc5ceb8e0d4",
-      "name":{
-        "en":"Stefan_demo",
-        "zh-CN":"Stefan_demo"
-      },
-      "location":{
-        "en":"shanghai",
-        "zh-CN":"上海"
-      },
-      "model":"pdr1500"
-    },
-    {
-      "id":"69eee2ce-e955-4941-94b6-a123806915ba",
-      "name":{
-        "en":"Notes2_demo",
-        "zh-CN":"Notes2_demo"
-      },
-      "location":{
-        "en":"shanghai",
-        "zh-CN":"上海"
-      },
-      "model":"pdr1500"
-    },
-    {
-      "id":"3e8e5630-e24e-11e3-b2f5-001bc509a05f",
-      "name":{
-        "en":"jll",
-        "zh-CN":"jll"
-      },
-      "location":{
-        "en":"shanghai",
-        "zh-CN":"上海"
-      },
-      "model":"pdr1500"
-    }
-  ];
+.factory('Devices', ['$http', '$q', function($http, $q) {
+
+  /**
+   * get all devices
+   * @return {promise} all the device, will be resolved in ui-roter config
+   */
+  function all() {
+    var defer = $q.defer()
+
+    // get code somewhere
+    var code = 'fqMvD41AfluPv30b';
+
+    $http.get('http://api.gam-systems.com.cn/v1/devices?code=' + code, {
+      headers: {
+        'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .success(function(data, status, headers, config) {
+      console.log('devices', data)
+
+      defer.resolve(data)
+    })
+    .error(function(data, status, headers, config) {
+      console.log('get devices error')
+      defer.reject(data)
+    })
+
+    return defer.promise;
+  };
+
+  /**
+   * get device AQIs from device ID array
+   * @param  {Array} deviceId Array
+   * @return {promise}          AQI Data
+   */
+  function deviceAQIs(deviceId) {
+    var defer = $q.defer()
+
+    // get code somewhere
+    var code = 'fqMvD41AfluPv30b';
+
+    $http.post('http://api.gam-systems.com.cn/v1/aqis/latest', {
+      IDs: [deviceId]
+    }, {
+      headers: {
+        'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .success(function(data, status, headers, config) {
+      console.log('AQIs', data)
+
+      defer.resolve(data)
+    })
+    .error(function(data, status, headers, config) {
+      console.log('get AQIs error')
+      defer.reject(data)
+    })
+
+    return defer.promise;
+  };
+
+  function AQIHistory(deviceId) {
+    var defer = $q.defer()
+
+    // get code somewhere
+    var code = 'fqMvD41AfluPv30b';
+
+    $http.post('http://api.gam-systems.com.cn/v1/aqis/history', {
+      IDs: [deviceId]
+    }, {
+      headers: {
+        'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .success(function(data, status, headers, config) {
+      console.log('devices', data)
+
+      defer.resolve(data)
+    })
+    .error(function(data, status, headers, config) {
+      console.log('get devices error')
+      defer.reject(data)
+    })
+
+    return defer.promise;
+  };
+
+  function OutdoorAQI(deviceId) {
+    var defer = $q.defer()
+
+    // get code somewhere
+    var code = 'fqMvD41AfluPv30b';
+
+    $http.post('http://api.gam-systems.com.cn/v1/aqis/latest', {
+      IDs: [deviceId]
+    }, {
+      headers: {
+        'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .success(function(data, status, headers, config) {
+      console.log('devices', data)
+
+      defer.resolve(data)
+    })
+    .error(function(data, status, headers, config) {
+      console.log('get devices error')
+      defer.reject(data)
+    })
+
+    return defer.promise;
+  }
 
   return {
-    all: function() {
-      return fakeDevices;
-    },
-    get: function(deviceId) {
-      return fakeDevices.filter(function(device) {
-        return device.id === deviceId
-      })[0]
-    }
+    all: all,
+    deviceAQIs: deviceAQIs,
+    AQIHistory: AQIHistory,
+    OutdoorAQI: OutdoorAQI
   }
-});
+}]);

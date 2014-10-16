@@ -8,6 +8,7 @@ Client side code for gams
 
 ```
 $ npm install -g cordova ionic
+$ bower install
 ```
 
 * Add platform

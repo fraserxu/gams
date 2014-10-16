@@ -11,10 +11,12 @@ angular.module('gams.controllers', [])
   }
 })
 
-.controller('DevicesCtrl', function($scope) {
-  $scope.devices = fakeDevices;
+.controller('DevicesCtrl', function($scope, devices) {
+  $scope.devices = devices;
 })
 
-.controller('DeviceCtrl', function($scope, $stateParams) {
-  $scope.device = fakeDevices[$stateParams.deviceId - 1]
+.controller('DeviceCtrl', function($scope, deviceAQI, aqiHistory, outdoorAqi) {
+  $scope.deviceAQI = deviceAQI;
+  $scope.aqiHistory = aqiHistory;
+  $scope.outdoorAqi = outdoorAqi;
 });
