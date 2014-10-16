@@ -6,7 +6,14 @@ angular.module('gams.controllers', [])
   $scope.login = function() {
 
     // TODO: validate
-    User.login($scope.loginData.name, $scope.loginData.password)
+    User.login($scope.loginData.name, $scope.loginData.password).then(function(data) {
+
+      // Jump to devices page
+      $state.go('devices')
+
+    }, function(err) {
+      // TODO: show error message.
+    })
 
   }
 })

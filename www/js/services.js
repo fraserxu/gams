@@ -1,7 +1,16 @@
 angular.module('gams.services', [])
 
-.factory('User', ['$http', function($http) {
+.factory('User', ['$http', '$q', function($http, $q) {
+
+  /**
+   * login
+   * @param  {string} name     username
+   * @param  {string} password filed
+   * @return {promise}          res data
+   */
   function login(name, password) {
+    var defer = $q.defer()
+
     $http.post('http://api.gam-systems.com.cn/v1/account_auth', {
       name: name,
       password: password
@@ -14,12 +23,19 @@ angular.module('gams.services', [])
     })
     .success(function(data, status, headers, config) {
       console.log('login success')
+
+      defer.resolve(data);
       // TODO: save token
     })
     .error(function(data, status, headers, config) {
       console.log('login error')
+      defer.reject(data)
     })
+
+    return defer.promise;
   }
+
+
   return {
     login: login
   }
