@@ -50,7 +50,7 @@ angular.module('gams', [
     }
   })
 
-  $urlRouterProvider.otherwise('/');
+  $urlRouterProvider.otherwise('/login');
 })
 
 .run(function($ionicPlatform) {
