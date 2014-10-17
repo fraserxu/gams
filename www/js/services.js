@@ -65,7 +65,7 @@ angular.module('gams.services', [])
   }
 }])
 
-.factory('User', ['$http', '$q', function($http, $q) {
+.factory('User', ['$http', '$q', 'Request', function($http, $q, Request) {
 
   /**
    * get accessToken
@@ -96,32 +96,11 @@ angular.module('gams.services', [])
    * @return {promise}          res data
    */
   function login(name, password) {
-    var defer = $q.defer()
-
-    $http.post('http://api.gam-systems.com.cn/v1/account_auth', {
+    var url = 'http://api.gam-systems.com.cn/v1/account_auth';
+    return Reqeust.post(url, {
       name: name,
       password: password
-    }, {
-      headers: {
-        'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
     })
-    .success(function(data, status, headers, config) {
-      console.log('login success')
-
-      defer.resolve(data);
-      // TODO: save token
-    })
-    .error(function(data, status, headers, config) {
-      console.log('login error')
-      defer.reject(data)
-    })
-
-    return defer.promise;
-  }
-
 
   return {
     token: token,
