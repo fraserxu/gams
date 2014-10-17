@@ -13,7 +13,12 @@ angular.module('gams', [
   .state('login', {
     url: '/login',
     templateUrl: 'templates/login.html',
-    controller: 'LoginCtrl'
+    controller: 'LoginCtrl',
+    resolve: {
+      // token: function(User) {
+      //   return User.token()
+      // }
+    }
   })
   .state('devices', {
     url: '/devices',
@@ -30,11 +35,14 @@ angular.module('gams', [
     templateUrl: 'templates/device.html',
     controller: 'DeviceCtrl',
     resolve: {
+      devices: function(Devices) {
+        return Devices.all()
+      },
       deviceAQI: function(Devices, $stateParams) {
         return Devices.deviceAQIs($stateParams.deviceId)
       },
       aqiHistory: function(Devices, $stateParams) {
-        return Devices.AQIHistory($stateParams.deviceId)
+        return Devices.AQIHistory($stateParams.deviceId, '24h', '20m')
       },
       outdoorAqi: function(Devices, $stateParams) {
         return Devices.OutdoorAQI($stateParams.deviceId)

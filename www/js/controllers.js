@@ -22,8 +22,16 @@ angular.module('gams.controllers', [])
   $scope.devices = devices;
 })
 
-.controller('DeviceCtrl', function($scope, deviceAQI, aqiHistory, outdoorAqi) {
+.controller('DeviceCtrl', function($scope, $stateParams, deviceAQI, aqiHistory, outdoorAqi, devices) {
   $scope.deviceAQI = deviceAQI;
   $scope.aqiHistory = aqiHistory;
   $scope.outdoorAqi = outdoorAqi;
+
+  var deviceId = $stateParams.deviceId;
+
+  var idx = devices.map(function(device) {
+    return device.id
+  }).indexOf(deviceId);
+
+  $scope.device = devices[idx]
 });

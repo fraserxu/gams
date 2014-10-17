@@ -3,6 +3,28 @@ angular.module('gams.services', [])
 .factory('User', ['$http', '$q', function($http, $q) {
 
   /**
+   * get accessToken
+   * @return {promise} auth data with accessToken
+   */
+  function token() {
+    var defer = $q.defer()
+
+    $http.post('http://api.gam-systems.com.cn/token', {
+      'grant_type': 'client_credentials',
+      'client_id': '6SU4TdVhrXu8v7SG',
+      'client_secret': 'S2i855MOlJhnyK0N'
+    }, {})
+    .success(function(data, status, headers, config) {
+      defer.resolve(data)
+    })
+    .error(function(data, status, headers, config) {
+      defer.reject(data)
+    })
+
+    return defer.promise;
+  }
+
+  /**
    * login
    * @param  {string} name     username
    * @param  {string} password filed
@@ -37,6 +59,7 @@ angular.module('gams.services', [])
 
 
   return {
+    token: token,
     login: login
   }
 }])
@@ -84,9 +107,9 @@ angular.module('gams.services', [])
     // get code somewhere
     var code = 'fqMvD41AfluPv30b';
 
-    $http.post('http://api.gam-systems.com.cn/v1/aqis/latest', {
-      IDs: [deviceId]
-    }, {
+    $http.post('http://api.gam-systems.com.cn/v1/aqis/latest',
+      [deviceId]
+    , {
       headers: {
         'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
         'Content-Type': 'application/json',
@@ -106,15 +129,21 @@ angular.module('gams.services', [])
     return defer.promise;
   };
 
-  function AQIHistory(deviceId) {
+  /**
+   * Get AQIHistory from deviceId and d, g
+   * @param {string} deviceId
+   * @param {string} d        day is either ‘720h’ (month) or ‘24h’ (day)
+   * @param {string} g        timegap is either ‘12h’ (month) or ‘20m’ (day)
+   */
+  function AQIHistory(deviceId, d, g) {
     var defer = $q.defer()
 
     // get code somewhere
     var code = 'fqMvD41AfluPv30b';
 
-    $http.post('http://api.gam-systems.com.cn/v1/aqis/history', {
-      IDs: [deviceId]
-    }, {
+    $http.post('http://api.gam-systems.com.cn/v1/aqis/history?d=' + d + '&g=' + g,
+      [deviceId]
+    , {
       headers: {
         'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
         'Content-Type': 'application/json',
@@ -122,7 +151,7 @@ angular.module('gams.services', [])
       }
     })
     .success(function(data, status, headers, config) {
-      console.log('devices', data)
+      console.log('aqi history', data)
 
       defer.resolve(data)
     })
@@ -134,15 +163,19 @@ angular.module('gams.services', [])
     return defer.promise;
   };
 
-  function OutdoorAQI(deviceId) {
+  /**
+   * get outdoor by cityName
+   * @param {string} cityName
+   */
+  function OutdoorAQI(cityName) {
     var defer = $q.defer()
 
     // get code somewhere
     var code = 'fqMvD41AfluPv30b';
 
-    $http.post('http://api.gam-systems.com.cn/v1/aqis/latest', {
-      IDs: [deviceId]
-    }, {
+    $http.post('http://api.gam-systems.com.cn/v1/aqis/latest',
+      [cityName]
+    , {
       headers: {
         'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
         'Content-Type': 'application/json',
@@ -150,12 +183,12 @@ angular.module('gams.services', [])
       }
     })
     .success(function(data, status, headers, config) {
-      console.log('devices', data)
+      console.log('outdoor aqis', data)
 
       defer.resolve(data)
     })
     .error(function(data, status, headers, config) {
-      console.log('get devices error')
+      console.log('get outdoor aqis error')
       defer.reject(data)
     })
 
