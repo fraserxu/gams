@@ -15,9 +15,9 @@ angular.module('gams', [
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl',
     resolve: {
-      // token: function(User) {
-      //   return User.token()
-      // }
+      token: function(User) {
+        return User.token()
+      }
     }
   })
   .state('devices', {

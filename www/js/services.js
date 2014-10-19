@@ -1,17 +1,25 @@
 angular.module('gams.services', [])
 
-.factory('Request', ['$http', '$q', function($http, $q) {
+.factory('Request', ['$http', '$q', '$state', '$localstorage', '$timeout', function($http, $q, $state, $localstorage, $timeout) {
   /**
    * get requst wrapper
    * @param  {params} params code
    * @return {[type]}        [description]
    */
   function get(url) {
+    if(!$localstorage.getObject('token')) {
+      $timeout(function() {
+        return $state.go('login')
+      })
+    } else {
+      var token = $localstorage.getObject('token');
+    }
+
     var defer = $q.defer();
 
     $http.get(url, {
       headers: {
-        'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
+        'Authorization': 'Bearer ' + token['access_token'],
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
@@ -35,13 +43,21 @@ angular.module('gams.services', [])
    * @return {promise} data
    */
   function post(url, data) {
+    if(!$localstorage.getObject('token')) {
+      $timeout(function() {
+        return $state.go('login')
+      })
+    } else {
+      var token = $localstorage.getObject('token');
+    }
+
     var defer = $q.defer()
 
     $http.post(url,
       data
     , {
       headers: {
-        'Authorization': 'Bearer MDZmMGI2MDItNDc3NC00ZmJmLWJmZDYtY2E4YzgyMGE1ODJm',
+        'Authorization': 'Bearer ' + token['access_token'],
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
@@ -74,11 +90,22 @@ angular.module('gams.services', [])
   function token() {
     var defer = $q.defer()
 
-    $http.post('http://api.gam-systems.com.cn/token', {
-      'grant_type': 'client_credentials',
-      'client_id': '6SU4TdVhrXu8v7SG',
-      'client_secret': 'S2i855MOlJhnyK0N'
-    }, {})
+    $http({
+      method: 'POST',
+      url: 'http://api.gam-systems.com.cn/token',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      transformRequest: function(obj) {
+        var str = [];
+        for(var p in obj)
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        return str.join("&");
+      },
+      data: {
+        'grant_type': 'client_credentials',
+        'client_id': '6SU4TdVhrXu8v7SG',
+        'client_secret': 'S2i855MOlJhnyK0N'
+      }
+    })
     .success(function(data, status, headers, config) {
       defer.resolve(data)
     })
@@ -97,10 +124,11 @@ angular.module('gams.services', [])
    */
   function login(name, password) {
     var url = 'http://api.gam-systems.com.cn/v1/account_auth';
-    return Reqeust.post(url, {
+    return Request.post(url, {
       name: name,
       password: password
     })
+  }
 
   return {
     token: token,
@@ -108,15 +136,22 @@ angular.module('gams.services', [])
   }
 }])
 
-.factory('Devices', ['Request', function(Request) {
+.factory('Devices', ['Request', '$localstorage', '$state', '$timeout', function(Request, $localstorage, $state, $timeout) {
 
   /**
    * get all devices
    * @return {promise} all the device, will be resolved in ui-roter config
    */
   function all() {
-    // get code somewhere
-    var code = 'fqMvD41AfluPv30b';
+    if(!$localstorage.get('code')) {
+      $timeout(function() {
+        return $state.go('login')
+      })
+    } else {
+      var code = $localstorage.get('code');
+    }
+
+    console.log('code', code)
     var url = 'http://api.gam-systems.com.cn/v1/devices?code=' + code;
 
     return Request.get(url)
@@ -157,5 +192,24 @@ angular.module('gams.services', [])
     deviceAQIs: deviceAQIs,
     AQIHistory: AQIHistory,
     OutdoorAQI: OutdoorAQI
+  }
+}])
+
+// localStorage wrapper
+// http://learn.ionicframework.com/formulas/localstorage/
+.factory('$localstorage', ['$window', function($window) {
+  return {
+    set: function(key, value) {
+      $window.localStorage[key] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[key] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[key] = JSON.stringify(value);
+    },
+    getObject: function(key) {
+      return JSON.parse($window.localStorage[key] || '{}');
+    }
   }
 }]);
